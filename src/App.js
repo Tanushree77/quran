@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+// App.js
+import React, { useState } from 'react';
+import './tailwind.css'; 
+import file from './Quran.pdf';
+import { Document,Page,pdfjs } from 'react-pdf';
+import NavbarComponent from './components/NavbarComponent';
+pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js',import.meta.url).toString();
+
+
 
 function App() {
+  console.log(file);
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const onDocumentLoadSuccess = ({ numPages }) => {
+    console.log(numPages);
+    setNumPages(numPages);
+  }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <NavbarComponent />
+      <Document
+        file={file}
+        onLoadSuccess={onDocumentLoadSuccess}
+      >
+       { Array.from(new Array(numPages), (i, index) => (
+        <Page key={`page_${index+1}`} pageNumber={index+1} />
+        ))} 
+        <Page pageNumber={pageNumber} />
+
+        
+      </Document>
     </div>
   );
 }
 
 export default App;
+
+
+
+
+
+
+
+  
+
+
