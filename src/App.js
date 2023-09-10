@@ -1,6 +1,7 @@
 // App.js
 import React, { useState } from 'react';
 import './tailwind.css'; 
+import { GrNext,GrPrevious } from "react-icons/gr";
 import file from './Quran.pdf';
 import { Document,Page,pdfjs } from 'react-pdf';
 import NavbarComponent from './components/NavbarComponent';
@@ -9,30 +10,48 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.j
 
 
 function App() {
-  console.log(file);
-  const [numPages, setNumPages] = useState(null);
+  const [numPages, setNumPages] = useState();
   const [pageNumber, setPageNumber] = useState(1);
 
-  const onDocumentLoadSuccess = ({ numPages }) => {
-    console.log(numPages);
+  function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
 
 
   return (
-    <div className="App">
-      <NavbarComponent />
-      <Document
-        file={file}
-        onLoadSuccess={onDocumentLoadSuccess}
-      >
-       { Array.from(new Array(numPages), (i, index) => (
-        <Page key={`page_${index+1}`} pageNumber={index+1} />
-        ))} 
-        <Page pageNumber={pageNumber} />
+    <div className="flex flex-col justify-items-center w-full bg-gray-50"> 
+          <div className=''>
+            <NavbarComponent/>
+          </div>
+          <div className='flex justify-between sticky'>
+           <button className='text-white font-bold py-2 px-4 rounded' onClick={() => setPageNumber(pageNumber - 1)} disabled={pageNumber <= 1}>
+            <GrPrevious size={20} />
+          </button>
+          <div>
+          <p>
+            Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
+          </p>
+          </div>
+         
+      
+          <button className=' font-bold py-2 px-4 rounded' onClick={() => setPageNumber(pageNumber + 1)} disabled={pageNumber >= numPages}>
+          <GrNext size={20}/>
+          </button>
 
+
+          </div>
+          
+          <div className='flex justify-center' >
+            
+
+            <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
+           <Page pageNumber={pageNumber} />
+           </Document>
         
-      </Document>
+        
+
+          </div>
+     
     </div>
   );
 }
